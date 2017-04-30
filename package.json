@@ -1,0 +1,20 @@
+{
+  "name": "eslint-plugin-prettify",
+  "version": "0.0.0",
+  "description": "Prettier as an ESLint plugin",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "Andres Suarez <zertosh@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "fast-diff": "^1.1.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "dedent": "0.7.0",
+    "eslint": "^3.19.0",
+    "prettier": "1.2.2"
+  }
+}
