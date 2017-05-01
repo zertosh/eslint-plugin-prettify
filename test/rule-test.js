@@ -22,6 +22,7 @@ ruleTester.run('prettier', rule, {
     testFixture('07'),
     testFixture('08'),
     testFixture('09'),
+    testFixture('10'),
   ],
 });
 

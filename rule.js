@@ -122,6 +122,7 @@ function showInvisibles(str) {
     switch (str[i]) {
       case ' ': ret += '\u00B7'; break; // Middle Dot
       case '\n': ret += '\u23ce'; break; // Return Symbol
+      case '\t': ret += '\u21b9'; break; // Left Arrow To Bar Over Right Arrow To Bar
       default: ret += str[i]; break;
     }
   }
