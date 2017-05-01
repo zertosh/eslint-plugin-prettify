@@ -11,59 +11,65 @@ const options = {
   parser: 'flow',
 };
 
-module.exports = function(context) {
-  return {
-    'Program:exit'(node) {
-      // const firstComment = node.comments[0];
-      // if (
-      //   !firstComment ||
-      //   firstComment.start !== 0 ||
-      //   !firstComment.value.includes('* @format')
-      // ) {
-      //   return;
-      // }
+module.exports = {
+  meta: {
+    fixable: 'code',
+    schema: [],
+  },
+  create(context) {
+    return {
+      'Program:exit'(node) {
+        // const firstComment = node.comments[0];
+        // if (
+        //   !firstComment ||
+        //   firstComment.start !== 0 ||
+        //   !firstComment.value.includes('* @format')
+        // ) {
+        //   return;
+        // }
+        if (prettier == null) prettier = require('prettier');
 
-      if (prettier == null) prettier = require('prettier');
-      const source = context.getSource();
-      const prettierSource = prettier.format(source, options);
-      if (source === prettierSource) {
-        return;
-      }
-
-      const results = diff(source, prettierSource);
-      let offset = 0;
-
-      for (let i = 0; i < results.length; i++) {
-        const result = results[i];
-
-        switch (result[0]) {
-        case diff.EQUAL:
-          offset += result[1].length;
-          break;
-
-        case diff.INSERT:
-          reportInsert(context, offset, result[1]);
-          // INSERTs do not advance the offset.
-          break;
-
-        case diff.DELETE:
-          const next = results[i + 1];
-          // For more useful messages, a DELETE followed by an INSERT is
-          // reported as a "replace".
-          // TODO: Figure out if a INSERT followed by a DELETE is possible.
-          if (next != null && next[0] === diff.INSERT) {
-            reportReplace(context, offset, result[1], next[1]);
-            offset += result[1].length - next[1].length;
-            i++;
-          } else {
-            reportDelete(context, offset, result[1]);
-            offset += result[1].length;
-          }
-          break;
+        const source = context.getSource();
+        const prettierSource = prettier.format(source, options);
+        if (source === prettierSource) {
+          return;
         }
-      }
-    },
-  };
+
+        const results = diff(source, prettierSource);
+        let offset = 0;
+
+        for (let i = 0; i < results.length; i++) {
+          const result = results[i];
+
+          switch (result[0]) {
+          case diff.EQUAL:
+            offset += result[1].length;
+            break;
+
+          case diff.INSERT:
+            reportInsert(context, offset, result[1]);
+            // INSERTs do not advance the offset.
+            break;
+
+          case diff.DELETE:
+            const next = results[i + 1];
+            // For more useful messages, a DELETE followed by an INSERT is
+            // reported as a "replace".
+            // TODO: Figure out if a INSERT followed by a DELETE is possible.
+            if (next != null && next[0] === diff.INSERT) {
+              reportReplace(context, offset, result[1], next[1]);
+              offset += result[1].length - next[1].length;
+              i++;
+            } else {
+              reportDelete(context, offset, result[1]);
+              offset += result[1].length;
+            }
+            break;
+          }
+        }
+      },
+    };
+  }
 };
 
 function reportInsert(context, offset, text) {
