@@ -2,12 +2,23 @@
   "name": "eslint-plugin-prettify",
   "version": "0.0.0",
   "description": "Prettier as an ESLint plugin",
+  "keywords": [
+    "eslint",
+    "prettier"
+  ],
+  "license": "MIT",
+  "author": "Andres Suarez <zertosh@gmail.com>",
+  "files": [
+    "docblock.js",
+    "index.js",
+    "no-styles.js",
+    "rule.js",
+    "styles-rules.json"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "find test -name '*-test.js' -exec node {} \\;"
   },
-  "author": "Andres Suarez <zertosh@gmail.com>",
-  "license": "MIT",
   "dependencies": {
     "fast-diff": "^1.1.1"
   },
