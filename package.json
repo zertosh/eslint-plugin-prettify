@@ -12,8 +12,7 @@
     "docblock.js",
     "index.js",
     "no-styles.js",
-    "rule.js",
-    "styles-rules.json"
+    "rule.js"
   ],
   "main": "index.js",
   "scripts": {
