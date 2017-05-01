@@ -1,0 +1,13 @@
+CODE:
+var foo= '';
+
+OUTPUT:
+var foo = '';
+
+ERRORS:
+[
+  {
+    message: 'Add: "·"',
+    line: 1, column: 8, endLine: 1, endColumn: 8,
+  },
+]

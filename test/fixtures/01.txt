@@ -1,0 +1,13 @@
+CODE:
+a();;;;;;
+
+OUTPUT:
+a();
+
+ERRORS:
+[
+  {
+    message: 'Remove: ";;;;;"',
+    line: 1, column: 5, endLine: 1, endColumn: 10,
+  }
+]

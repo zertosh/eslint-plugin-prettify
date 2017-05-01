@@ -10,96 +10,77 @@ const options = {
   parser: 'flow',
 };
 
-function locFromRange(lines, range) {
-  debugger;
-  let [start, end] = range;
-  let loc = {
-    start: {line: 0, column: 0},
-    end: {line: 0, column: 0},
-  };
-  let offset = 0;
-  for (let i = 0; i < lines.length; i++) {
-    let nextOffset = offset + lines[i].length;
-    if (start >= offset && start <= nextOffset) {
-      loc.start.line = i + 1;
-      loc.start.column = start - offset;
-    }
-    if (end >= offset && end < nextOffset) {
-      loc.end.line = i + 1;
-      loc.end.column = end - offset;
-      return loc;
-    }
-    offset = nextOffset + 1;
-  }
-  return loc;
-}
-
 module.exports = function(context) {
   return {
     'Program:exit'(node) {
-      const firstComment = node.comments[0];
-      if (
-        !firstComment ||
-        firstComment.start !== 0 ||
-        !firstComment.value.includes('* @format')
-      ) {
-        return;
-      }
+      // const firstComment = node.comments[0];
+      // if (
+      //   !firstComment ||
+      //   firstComment.start !== 0 ||
+      //   !firstComment.value.includes('* @format')
+      // ) {
+      //   return;
+      // }
 
       const source = context.getSource();
       const prettierSource = require('prettier').format(source, options);
       if (source !== prettierSource) {
+        const sourceCode = context.getSourceCode();
+        const results = diff(source, prettierSource);
+        let offset = 0;
 
-        var results = diff(source, prettierSource);
-        var offset = 0;
+        for (let i = 0; i < results.length; i++) {
+          const result = results[i];
+          const operation = result[0];
+          const replaceText = result[1];
 
-        var sourceCode = context.getSourceCode();
+          switch (operation) {
+          case diff.EQUAL:
+            offset += replaceText.length;
+            break;
 
-        for (var i = 0; i < results.length; i++) {
-          var result = results[i];
+          case diff.INSERT:
+            const pos = sourceCode.getLocFromIndex(offset);
+            context.report({
+              message: 'Add: "{{ code }}"',
+              data: {code: showInvisibles(replaceText)},
+              loc: {start: pos, end: pos},
+              fix(fixer) {
+                return fixer.insertTextAfterRange([null, offset], replaceText)
+              }
+            })
+            // offset is not advanced for inserts.
+            break;
 
-          switch (result[0]) {
-            case diff.EQUAL:
-              offset += result[1].length;
-              break;
-
-            case diff.INSERT: {
-              let replaceText = result[1];
-              let replaceRange = [offset, offset + replaceText.length];
-              let loc = locFromRange(sourceCode.getLines(), replaceRange);
-              // console.log(replaceRange, loc);
-              // offset = replaceRange[1];
-              context.report({
-                message: 'INSERT: {{ insert }}',
-                data: {insert: replaceText},
-                loc: {start: loc.start, end: loc.start},
-                fix(fixer) {
-                  return fixer.insertTextAfterRange([replaceRange[0], replaceRange[0]], replaceText)
-                }
-              })
-              break;
-            }
-
-            case diff.DELETE: {
-              let replaceText = result[1];
-              let replaceRange = [offset, offset + replaceText.length];
-              let loc = locFromRange(sourceCode.getLines(), replaceRange);
-              console.log(replaceRange, loc);
-              // offset = replaceRange[1];
-              loc.end.column--;
-              context.report({
-                message: 'DELETE: {{ insert }}',
-                data: {insert: replaceText},
-                loc: loc,
-                fix(fixer) {
-                  return fixer.removeRange(replaceRange)
-                }
-              })
-              break;
-            }
+          case diff.DELETE:
+            const start = sourceCode.getLocFromIndex(offset);
+            const end = sourceCode.getLocFromIndex(offset + replaceText.length);
+            const range = [offset, offset + replaceText.length];
+            context.report({
+              message: 'Remove: "{{ code }}"',
+              data: {code: showInvisibles(replaceText)},
+              loc: {start, end},
+              fix(fixer) {
+                return fixer.removeRange(range);
+              }
+            })
+            offset += replaceText.length;
+            break;
           }
         }
       }
     },
   };
 };
+
+function showInvisibles(str) {
+  var ret = '';
+  for (var i = 0; i < str.length; i++) {
+    switch (str[i]) {
+      case ' ': ret += '\u00B7'; break; // Middle Dot
+      case '\n': ret += '\u23ce'; break; // Return Symbol
+      default: ret += str[i]; break;
+    }
+  }
+  return ret;
+}
