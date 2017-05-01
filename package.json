@@ -9,7 +9,6 @@
   "license": "MIT",
   "author": "Andres Suarez <zertosh@gmail.com>",
   "files": [
-    "docblock.js",
     "index.js",
     "no-styles.js",
     "rule.js"
