@@ -11,6 +11,7 @@ const ruleTester = new RuleTester();
 ruleTester.run('prettier', rule, {
   valid: [
     {code: 'a();\n'},
+    {code: 'a()\n', options: [null, '@format']},
   ],
   invalid: [
     testFixture('01'),
@@ -26,6 +27,7 @@ ruleTester.run('prettier', rule, {
     testFixture('11-a'),
     testFixture('11-b'),
     testFixture('11-c'),
+    testFixture('12'),
   ],
 });
 

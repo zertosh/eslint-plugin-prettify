@@ -1,6 +1,7 @@
 'use strict';
 
 const diff = require('fast-diff');
+const docblock = require('./docblock');
 let prettier;
 
 const fbPrettierOptions = {
@@ -18,37 +19,54 @@ module.exports = {
       {
         // Prettier settings:
         anyOf: [
-          {enum: [null, 'fb']},
+          {
+            enum: [null, 'fb']
+          },
           {
             type: "object",
             properties: {},
             additionalProperties: true
           }
         ]
+      },
+      {
+        // "Use Prettier" Pragma:
+        type: "string",
+        pattern: "^@\\w+$"
       }
     ],
   },
   create(context) {
+    const prettierOptions = context.options[0] === 'fb'
+      ? fbPrettierOptions
+      : context.options[0];
+
+    const pragma = context.options[1]
+      ? context.options[1].slice(1) // Remove leading @
+      : null;
+
+    if (pragma != null) {
+      const firstComment = context.getAllComments()[0];
+      if (!(
+        firstComment &&
+        firstComment.type === 'Block' &&
+        firstComment.start === 0
+      )) {
+        return {};
+      }
+      const parsed = docblock.parse(firstComment.value);
+      if (!parsed.hasOwnProperty(pragma) || parsed[pragma] !== '') {
+        return {};
+      }
+    }
+
     return {
       'Program:exit'(node) {
-        // const firstComment = node.comments[0];
-        // if (
-        //   !firstComment ||
-        //   firstComment.start !== 0 ||
-        //   !firstComment.value.includes('* @format')
-        // ) {
-        //   return;
-        // }
-        const prettierOptions = context.options[0] === 'fb'
-          ? fbPrettierOptions
-          : context.options[0];
-
         if (prettier == null) prettier = require('prettier');
+
         const source = context.getSource();
         const prettierSource = prettier.format(source, prettierOptions);
-        if (source === prettierSource) {
-          return;
-        }
+        if (source === prettierSource) return;
 
         const results = diff(source, prettierSource);
         let offset = 0;
