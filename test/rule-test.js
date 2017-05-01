@@ -12,6 +12,7 @@ ruleTester.run('prettier', rule, {
   valid: [
     {code: 'a();\n'},
     {code: 'a()\n', options: [null, '@format']},
+    {code: '/** @format */\n\'\';\n', options: ['fb']},
   ],
   invalid: [
     testFixture('01'),
