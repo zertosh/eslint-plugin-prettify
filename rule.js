@@ -73,8 +73,7 @@ module.exports = {
 };
 
 function reportInsert(context, offset, text) {
-  const sourceCode = context.getSourceCode();
-  const pos = sourceCode.getLocFromIndex(offset);
+  const pos = getLocFromIndex(context, offset);
   const range = [null, offset];
   context.report({
     message: 'Insert `{{ code }}`',
@@ -87,9 +86,8 @@ function reportInsert(context, offset, text) {
 }
 
 function reportDelete(context, offset, text) {
-  const sourceCode = context.getSourceCode();
-  const start = sourceCode.getLocFromIndex(offset);
-  const end = sourceCode.getLocFromIndex(offset + text.length);
+  const start = getLocFromIndex(context, offset);
+  const end = getLocFromIndex(context, offset + text.length);
   const range = [offset, offset + text.length];
   context.report({
     message: 'Delete `{{ code }}`',
@@ -102,9 +100,8 @@ function reportDelete(context, offset, text) {
 }
 
 function reportReplace(context, offset, deleteText, insertText) {
-  const sourceCode = context.getSourceCode();
-  const start = sourceCode.getLocFromIndex(offset);
-  const end = sourceCode.getLocFromIndex(offset + deleteText.length);
+  const start = getLocFromIndex(context, offset);
+  const end = getLocFromIndex(context, offset + deleteText.length);
   const range = [offset, offset + deleteText.length];
   context.report({
     message: 'Replace `{{ deleteCode }}` with `{{ insertCode }}`',
@@ -129,4 +126,39 @@ function showInvisibles(str) {
     }
   }
   return ret;
+}
+
+// This was added in ESLint 3.16.0. The built-in version uses an index for fast
+// lookups, so try to use that when possible.
+function getLocFromIndex(context, index) {
+  const sourceCode = context.getSourceCode();
+  if (typeof sourceCode.getLocFromIndex === 'function') {
+    return sourceCode.getLocFromIndex(index);
+  } else {
+    const text = sourceCode.getText();
+    const lines = sourceCode.getLines();
+    if (typeof index !== 'number') {
+      throw new TypeError('Expected `index` to be a number.');
+    }
+    if (index < 0 || index > text.length) {
+      throw new RangeError('Index out of range.');
+    }
+    if (index === text.length) {
+      return {
+        line: lines.length,
+        column: lines[lines.length - 1].length,
+      };
+    }
+    let offset = 0;
+    for (let i = 0; i < lines.length; i++) {
+      if (index >= offset && index <= offset + lines[i].length) {
+        return {
+          line: i + 1,
+          column: index - offset,
+        };
+      }
+      // Add 1 for the line ending character
+      offset = offset + lines[i].length + 1;
+    }
+  }
 }
