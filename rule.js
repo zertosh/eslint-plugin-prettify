@@ -18,7 +18,7 @@ module.exports = {
       {
         // Prettier settings:
         anyOf: [
-          {enum: ['fb']},
+          {enum: [null, 'fb']},
           {
             type: "object",
             properties: {},

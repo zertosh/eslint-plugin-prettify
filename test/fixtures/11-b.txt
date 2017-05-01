@@ -1,20 +1,20 @@
 CODE:
 var a = {
-  b: ""
+  b: '',
 };
 
 OUTPUT:
 var a = {
-  b: '',
+  b: ""
 };
 
 OPTIONS:
-['fb']
+[null]
 
 ERRORS:
 [
   {
-    message: 'Replace `""` with `\'\',`',
-    line: 2, column: 6, endLine: 2, endColumn: 8,
+    message: 'Replace `\'\',` with `""`',
+    line: 2, column: 6, endLine: 2, endColumn: 9,
   },
 ]
