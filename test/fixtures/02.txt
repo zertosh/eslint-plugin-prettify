@@ -8,7 +8,7 @@ a();
 ERRORS:
 [
   {
-    message: 'Remove: ";;\u23ce;;;"',
+    message: 'Delete `;;⏎;;;`',
     line: 1, column: 5, endLine: 2, endColumn: 4,
   }
 ]

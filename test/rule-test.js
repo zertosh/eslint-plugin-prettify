@@ -13,12 +13,13 @@ ruleTester.run('prettier', rule, {
     {code: 'a();\n'},
   ],
   invalid: [
-    // testFixture('01'),
-    // testFixture('02'),
-    // testFixture('03'),
-    // testFixture('04'),
-    // testFixture('05'),
+    testFixture('01'),
+    testFixture('02'),
+    testFixture('03'),
+    testFixture('04'),
+    testFixture('05'),
     testFixture('06'),
+    testFixture('07'),
   ],
 });
 

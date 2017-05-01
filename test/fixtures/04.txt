@@ -7,7 +7,7 @@ var foo = '';
 ERRORS:
 [
   {
-    message: 'Add: "·"',
+    message: 'Insert `·`',
     line: 1, column: 8, endLine: 1, endColumn: 8,
   },
 ]

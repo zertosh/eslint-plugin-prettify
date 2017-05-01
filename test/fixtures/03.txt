@@ -8,11 +8,11 @@ a();
 ERRORS:
 [
   {
-    message: 'Remove: "\u00B7\u00B7"',
+    message: 'Delete `··`',
     line: 1, column: 1, endLine: 1, endColumn: 3,
   },
   {
-    message: 'Remove: ";;;\u23ce;;"',
+    message: 'Delete `;;;⏎;;`',
     line: 1, column: 6, endLine: 2, endColumn: 3,
   }
 ]

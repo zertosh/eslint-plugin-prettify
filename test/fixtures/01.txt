@@ -7,7 +7,7 @@ a();
 ERRORS:
 [
   {
-    message: 'Remove: ";;;;;"',
+    message: 'Delete `;;;;;`',
     line: 1, column: 5, endLine: 1, endColumn: 10,
   }
 ]
