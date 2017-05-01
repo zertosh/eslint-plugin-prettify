@@ -31,7 +31,8 @@ function testFixture(name) {
   const item = {
     code: sections[1],
     output: sections[2],
-    errors: eval(sections[3]),
+    options: eval(sections[3]),
+    errors: eval(sections[4]),
   };
   return item;
 }

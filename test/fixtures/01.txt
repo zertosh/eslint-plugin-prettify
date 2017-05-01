@@ -4,6 +4,9 @@ a();;;;;;
 OUTPUT:
 a();
 
+OPTIONS:
+[]
+
 ERRORS:
 [
   {

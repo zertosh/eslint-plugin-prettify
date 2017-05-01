@@ -4,6 +4,9 @@ var foo ="";
 OUTPUT:
 var foo = '';
 
+OPTIONS:
+[]
+
 ERRORS:
 [
   {
