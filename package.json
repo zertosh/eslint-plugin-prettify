@@ -4,7 +4,7 @@
   "description": "Prettier as an ESLint plugin",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "find test -name '*-test.js' -exec node {} \\;"
   },
   "author": "Andres Suarez <zertosh@gmail.com>",
   "license": "MIT",
