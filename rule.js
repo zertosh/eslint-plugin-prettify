@@ -94,12 +94,11 @@ module.exports = {
             // TODO: Figure out if a INSERT followed by a DELETE is possible.
             if (next != null && next[0] === diff.INSERT) {
               reportReplace(context, offset, result[1], next[1]);
-              offset += result[1].length - next[1].length;
               i++;
             } else {
               reportDelete(context, offset, result[1]);
-              offset += result[1].length;
             }
+            offset += result[1].length;
             break;
           }
         }
