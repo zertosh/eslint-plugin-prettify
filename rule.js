@@ -20,20 +20,20 @@ module.exports = {
         // Prettier settings:
         anyOf: [
           {
-            enum: [null, 'fb']
+            enum: [null, 'fb'],
           },
           {
-            type: "object",
+            type: 'object',
             properties: {},
-            additionalProperties: true
-          }
-        ]
+            additionalProperties: true,
+          },
+        ],
       },
       {
         // "Use Prettier" Pragma:
-        type: "string",
-        pattern: "^@\\w+$"
-      }
+        type: 'string',
+        pattern: '^@\\w+$',
+      },
     ],
   },
   create(context) {
@@ -44,16 +44,16 @@ module.exports = {
     const pragma = prettierOptions === fbPrettierOptions
       ? fbPragma
       : context.options[1]
-        ? context.options[1].slice(1) // Remove leading @
-        : null;
+          ? context.options[1].slice(1) // Remove leading @
+          : null;
 
     if (pragma != null) {
       const firstComment = context.getAllComments()[0];
-      if (!(
-        firstComment &&
-        firstComment.type === 'Block' &&
-        firstComment.start === 0
-      )) {
+      if (
+        !(firstComment &&
+          firstComment.type === 'Block' &&
+          firstComment.start === 0)
+      ) {
         return {};
       }
       const parsed = parseDocblock(firstComment.value);
@@ -77,33 +77,33 @@ module.exports = {
           const result = results[i];
 
           switch (result[0]) {
-          case diff.EQUAL:
-            offset += result[1].length;
-            break;
+            case diff.EQUAL:
+              offset += result[1].length;
+              break;
 
-          case diff.INSERT:
-            reportInsert(context, offset, result[1]);
-            // INSERTs do not advance the offset.
-            break;
+            case diff.INSERT:
+              reportInsert(context, offset, result[1]);
+              // INSERTs do not advance the offset.
+              break;
 
-          case diff.DELETE:
-            const next = results[i + 1];
-            // For more useful messages, a DELETE followed by an INSERT is
-            // reported as a "replace".
-            // TODO: Figure out if a INSERT followed by a DELETE is possible.
-            if (next != null && next[0] === diff.INSERT) {
-              reportReplace(context, offset, result[1], next[1]);
-              i++;
-            } else {
-              reportDelete(context, offset, result[1]);
-            }
-            offset += result[1].length;
-            break;
+            case diff.DELETE:
+              const next = results[i + 1];
+              // For more useful messages, a DELETE followed by an INSERT is
+              // reported as a "replace".
+              // TODO: Figure out if a INSERT followed by a DELETE is possible.
+              if (next != null && next[0] === diff.INSERT) {
+                reportReplace(context, offset, result[1], next[1]);
+                i++;
+              } else {
+                reportDelete(context, offset, result[1]);
+              }
+              offset += result[1].length;
+              break;
           }
         }
       },
     };
-  }
+  },
 };
 
 function reportInsert(context, offset, text) {
@@ -154,10 +154,18 @@ function showInvisibles(str) {
   var ret = '';
   for (var i = 0; i < str.length; i++) {
     switch (str[i]) {
-      case ' ': ret += '\u00B7'; break; // Middle Dot
-      case '\n': ret += '\u23ce'; break; // Return Symbol
-      case '\t': ret += '\u21b9'; break; // Left Arrow To Bar Over Right Arrow To Bar
-      default: ret += str[i]; break;
+      case ' ':
+        ret += '\u00B7';
+        break; // Middle Dot
+      case '\n':
+        ret += '\u23ce';
+        break; // Return Symbol
+      case '\t':
+        ret += '\u21b9';
+        break; // Left Arrow To Bar Over Right Arrow To Bar
+      default:
+        ret += str[i];
+        break;
     }
   }
   return ret;
