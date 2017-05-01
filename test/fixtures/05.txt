@@ -1,8 +1,8 @@
 CODE:
-var foo='';
+var foo="";
 
 OUTPUT:
-var foo = '';
+var foo = "";
 
 OPTIONS:
 []

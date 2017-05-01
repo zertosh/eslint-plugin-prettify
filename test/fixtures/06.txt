@@ -1,8 +1,8 @@
 CODE:
-var foo="";;;
+var foo='';;;
 
 OUTPUT:
-var foo = '';
+var foo = "";
 
 OPTIONS:
 []
@@ -14,7 +14,7 @@ ERRORS:
     line: 1, column: 8, endLine: 1, endColumn: 8,
   },
   {
-    message: 'Replace `"";;` with `·\'\'`',
+    message: 'Replace `\'\';;` with `·""`',
     line: 1, column: 9, endLine: 1, endColumn: 13,
   },
 ]
