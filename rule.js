@@ -3,15 +3,28 @@
 const diff = require('fast-diff');
 let prettier;
 
+const fbPrettierOptions = {
+  singleQuote: true,
+  trailingComma: 'all',
+  bracketSpacing: false,
+  jsxBracketSameLine: true,
+  parser: 'flow',
+};
+
 module.exports = {
   meta: {
     fixable: 'code',
     schema: [
       {
         // Prettier settings:
-        type: "object",
-        properties: {},
-        additionalProperties: true
+        anyOf: [
+          {enum: ['fb']},
+          {
+            type: "object",
+            properties: {},
+            additionalProperties: true
+          }
+        ]
       }
     ],
   },
@@ -26,7 +39,9 @@ module.exports = {
         // ) {
         //   return;
         // }
-        const prettierOptions = context.options[0];
+        const prettierOptions = context.options[0] === 'fb'
+          ? fbPrettierOptions
+          : context.options[0];
 
         if (prettier == null) prettier = require('prettier');
         const source = context.getSource();
