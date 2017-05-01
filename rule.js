@@ -4,6 +4,7 @@ const diff = require('fast-diff');
 const docblock = require('./docblock');
 let prettier;
 
+const fbPragma = 'format';
 const fbPrettierOptions = {
   singleQuote: true,
   trailingComma: 'all',
@@ -41,9 +42,11 @@ module.exports = {
       ? fbPrettierOptions
       : context.options[0];
 
-    const pragma = context.options[1]
-      ? context.options[1].slice(1) // Remove leading @
-      : null;
+    const pragma = prettierOptions === fbPrettierOptions
+      ? fbPragma
+      : context.options[1]
+        ? context.options[1].slice(1) // Remove leading @
+        : null;
 
     if (pragma != null) {
       const firstComment = context.getAllComments()[0];

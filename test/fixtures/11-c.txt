@@ -1,9 +1,11 @@
 CODE:
+/** @format */
 var a = {
   b: ""
 };
 
 OUTPUT:
+/** @format */
 var a = {
   b: '',
 };
@@ -15,6 +17,6 @@ ERRORS:
 [
   {
     message: 'Replace `""` with `\'\',`',
-    line: 2, column: 6, endLine: 2, endColumn: 8,
+    line: 3, column: 6, endLine: 3, endColumn: 8,
   },
 ]
