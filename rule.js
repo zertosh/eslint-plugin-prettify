@@ -50,6 +50,7 @@ module.exports = function(context) {
           const next = results[i + 1];
           // For more useful messages, a DELETE followed by an INSERT is
           // reported as a "replace".
+          // TODO: Figure out if a INSERT followed by a DELETE is possible.
           if (next != null && next[0] === diff.INSERT) {
             reportReplace(context, offset, result[1], next[1]);
             offset += result[1].length - next[1].length;
