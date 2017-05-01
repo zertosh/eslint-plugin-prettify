@@ -3,18 +3,17 @@
 const diff = require('fast-diff');
 let prettier;
 
-const options = {
-  singleQuote: true,
-  trailingComma: 'all',
-  bracketSpacing: false,
-  jsxBracketSameLine: true,
-  parser: 'flow',
-};
-
 module.exports = {
   meta: {
     fixable: 'code',
-    schema: [],
+    schema: [
+      {
+        // Prettier settings:
+        type: "object",
+        properties: {},
+        additionalProperties: true
+      }
+    ],
   },
   create(context) {
     return {
@@ -27,10 +26,11 @@ module.exports = {
         // ) {
         //   return;
         // }
-        if (prettier == null) prettier = require('prettier');
+        const prettierOptions = context.options[0];
 
+        if (prettier == null) prettier = require('prettier');
         const source = context.getSource();
-        const prettierSource = prettier.format(source, options);
+        const prettierSource = prettier.format(source, prettierOptions);
         if (source === prettierSource) {
           return;
         }
