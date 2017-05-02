@@ -58,7 +58,7 @@ In your `.eslintrc`:
   - Objects are passed directly to Prettier as [options](https://github.com/prettier/prettier#api). Example:
     
     ```json
-    "prettify/prettier": [1, {"singleQuote": true, "parser": "flow"}]
+    "prettify/prettier": [2, {"singleQuote": true, "parser": "flow"}]
     ```
 
   - Or the string `"fb"` may be used to set "Facebook defaults":
