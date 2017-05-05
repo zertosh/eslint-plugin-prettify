@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-prettify",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Prettier as an ESLint plugin",
   "keywords": [
     "eslint",
