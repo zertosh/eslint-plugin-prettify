@@ -11,11 +11,7 @@ OPTIONS:
 ERRORS:
 [
   {
-    message: 'Delete `··`',
-    line: 1, column: 1, endLine: 1, endColumn: 3,
+    message: 'Replace `··a();;;⏎;;` with `a()`',
+    line: 1, column: 1, endLine: 2, endColumn: 3,
   },
-  {
-    message: 'Delete `;;;⏎;;`',
-    line: 1, column: 6, endLine: 2, endColumn: 3,
-  }
 ]

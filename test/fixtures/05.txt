@@ -10,11 +10,7 @@ OPTIONS:
 ERRORS:
 [
   {
-    message: 'Insert `·`',
-    line: 1, column: 8, endLine: 1, endColumn: 8,
-  },
-  {
-    message: 'Insert `·`',
-    line: 1, column: 9, endLine: 1, endColumn: 9,
+    message: 'Replace `=` with `·=·`',
+    line: 1, column: 8, endLine: 1, endColumn: 9,
   },
 ]

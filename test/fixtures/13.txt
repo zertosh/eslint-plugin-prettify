@@ -12,23 +12,7 @@ OPTIONS:
 ERRORS:
 [
   {
-    message: 'Replace `\'\'` with `·""`',
-    line: 1, column: 10, endLine: 1, endColumn: 12,
-  },
-  {
-    message: 'Insert `⏎`',
-    line: 1, column: 13, endLine: 1, endColumn: 13,
-  },
-  {
-    message: 'Replace `\'\'` with `·""`',
-    line: 1, column: 22, endLine: 1, endColumn: 24,
-  },
-  {
-    message: 'Insert `⏎`',
-    line: 1, column: 25, endLine: 1, endColumn: 25,
-  },
-  {
-    message: 'Replace `\'\'` with `·""`',
-    line: 1, column: 34, endLine: 1, endColumn: 36,
+    message: 'Replace `\'\';var·bar·=\'\';var·baz·=\'\'` with `·"";⏎var·bar·=·"";⏎var·baz·=·""`',
+    line: 1, column: 10, endLine: 1, endColumn: 36,
   },
 ]

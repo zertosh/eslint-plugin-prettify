@@ -12,6 +12,8 @@ const fbPrettierOptions = {
   parser: 'flow',
 };
 
+const LINE_ENDING_RE = /\r\n|[\r\n\u2028\u2029]/g;
+
 module.exports = {
   meta: {
     fixable: 'code',
@@ -71,35 +73,65 @@ module.exports = {
         if (source === prettierSource) return;
 
         const results = diff(source, prettierSource);
+
+        let batch = [];
         let offset = 0;
 
-        for (let i = 0; i < results.length; i++) {
-          const result = results[i];
+        // INSERTs do not advance the offset.
 
+        while (results.length) {
+          const result = results.shift();
           switch (result[0]) {
-          case diff.EQUAL:
-            offset += result[1].length;
-            break;
-
-          case diff.INSERT:
-            reportInsert(context, offset, result[1]);
-            // INSERTs do not advance the offset.
-            break;
-
-          case diff.DELETE:
-            const next = results[i + 1];
-            // For more useful messages, a DELETE followed by an INSERT is
-            // reported as a "replace".
-            // TODO: Figure out if a INSERT followed by a DELETE is possible.
-            if (next != null && next[0] === diff.INSERT) {
-              reportReplace(context, offset, result[1], next[1]);
-              i++;
-            } else {
-              reportDelete(context, offset, result[1]);
-            }
-            offset += result[1].length;
-            break;
+            case diff.INSERT:
+            case diff.DELETE:
+              batch.push(result);
+              break;
+            case diff.EQUAL:
+              if (results.length) {
+                if (batch.length) {
+                  if (LINE_ENDING_RE.test(result[1])) {
+                    flush();
+                    offset += result[1].length;
+                  } else {
+                    batch.push(result);
+                  }
+                } else {
+                  offset += result[1].length;
+                }
+              }
+              break;
           }
+          if (batch.length && !results.length) {
+            flush();
+          }
+        }
+
+        function flush() {
+          let aheadDeleteText = '';
+          let aheadInsertText = '';
+          while (batch.length) {
+            let next = batch.shift();
+            switch (next[0]) {
+              case diff.INSERT:
+                aheadInsertText += next[1];
+                break;
+              case diff.DELETE:
+                aheadDeleteText += next[1];
+                break;
+              case diff.EQUAL:
+                aheadDeleteText += next[1];
+                aheadInsertText += next[1];
+                break;
+            }
+          }
+          if (aheadDeleteText && aheadInsertText) {
+            reportReplace(context, offset, aheadDeleteText, aheadInsertText);
+          } else if (!aheadDeleteText && aheadInsertText) {
+            reportInsert(context, offset, aheadInsertText);
+          } else if (aheadDeleteText && !aheadInsertText) {
+            reportDelete(context, offset, aheadDeleteText);
+          }
+          offset += aheadDeleteText.length;
         }
       },
     };
