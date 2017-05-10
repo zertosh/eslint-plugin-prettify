@@ -1,6 +1,6 @@
 'use strict';
 
-const diff = require('fast-diff');
+let diff;
 let prettier;
 
 const fbPragma = 'format';
@@ -64,79 +64,84 @@ module.exports = {
       }
     }
 
+    if (diff == null) diff = require('fast-diff');
+    if (prettier == null) prettier = require('prettier');
+
     return {
       'Program:exit'(node) {
-        if (prettier == null) prettier = require('prettier');
-
         const source = context.getSource();
         const prettierSource = prettier.format(source, prettierOptions);
-        if (source === prettierSource) return;
 
-        const results = diff(source, prettierSource);
-
-        let batch = [];
-        let offset = 0;
-
-        // INSERTs do not advance the offset.
-
-        while (results.length) {
-          const result = results.shift();
-          switch (result[0]) {
-            case diff.INSERT:
-            case diff.DELETE:
-              batch.push(result);
-              break;
-            case diff.EQUAL:
-              if (results.length) {
-                if (batch.length) {
-                  if (LINE_ENDING_RE.test(result[1])) {
-                    flush();
-                    offset += result[1].length;
-                  } else {
-                    batch.push(result);
-                  }
-                } else {
-                  offset += result[1].length;
-                }
-              }
-              break;
-          }
-          if (batch.length && !results.length) {
-            flush();
-          }
-        }
-
-        function flush() {
-          let aheadDeleteText = '';
-          let aheadInsertText = '';
-          while (batch.length) {
-            let next = batch.shift();
-            switch (next[0]) {
-              case diff.INSERT:
-                aheadInsertText += next[1];
-                break;
-              case diff.DELETE:
-                aheadDeleteText += next[1];
-                break;
-              case diff.EQUAL:
-                aheadDeleteText += next[1];
-                aheadInsertText += next[1];
-                break;
-            }
-          }
-          if (aheadDeleteText && aheadInsertText) {
-            reportReplace(context, offset, aheadDeleteText, aheadInsertText);
-          } else if (!aheadDeleteText && aheadInsertText) {
-            reportInsert(context, offset, aheadInsertText);
-          } else if (aheadDeleteText && !aheadInsertText) {
-            reportDelete(context, offset, aheadDeleteText);
-          }
-          offset += aheadDeleteText.length;
+        if (source !== prettierSource) {
+          const diffs = diff(source, prettierSource);
+          reportDifferences(context, diffs);
         }
       },
     };
   }
 };
+
+function reportDifferences(context, results) {
+  let batch = [];
+  let offset = 0;
+
+  // INSERTs do not advance the offset.
+
+  while (results.length) {
+    const result = results.shift();
+    switch (result[0]) {
+      case diff.INSERT:
+      case diff.DELETE:
+        batch.push(result);
+        break;
+      case diff.EQUAL:
+        if (results.length) {
+          if (batch.length) {
+            if (LINE_ENDING_RE.test(result[1])) {
+              flush();
+              offset += result[1].length;
+            } else {
+              batch.push(result);
+            }
+          } else {
+            offset += result[1].length;
+          }
+        }
+        break;
+    }
+    if (batch.length && !results.length) {
+      flush();
+    }
+  }
+
+  function flush() {
+    let aheadDeleteText = '';
+    let aheadInsertText = '';
+    while (batch.length) {
+      let next = batch.shift();
+      switch (next[0]) {
+        case diff.INSERT:
+          aheadInsertText += next[1];
+          break;
+        case diff.DELETE:
+          aheadDeleteText += next[1];
+          break;
+        case diff.EQUAL:
+          aheadDeleteText += next[1];
+          aheadInsertText += next[1];
+          break;
+      }
+    }
+    if (aheadDeleteText && aheadInsertText) {
+      reportReplace(context, offset, aheadDeleteText, aheadInsertText);
+    } else if (!aheadDeleteText && aheadInsertText) {
+      reportInsert(context, offset, aheadInsertText);
+    } else if (aheadDeleteText && !aheadInsertText) {
+      reportDelete(context, offset, aheadDeleteText);
+    }
+    offset += aheadDeleteText.length;
+  }
+}
 
 function reportInsert(context, offset, text) {
   const pos = getLocFromIndex(context, offset);
