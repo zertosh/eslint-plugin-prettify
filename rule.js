@@ -70,7 +70,13 @@ module.exports = {
     return {
       'Program:exit'(node) {
         const source = context.getSource();
-        const prettierSource = prettier.format(source, prettierOptions);
+
+        let prettierSource;
+        try {
+          prettierSource = prettier.format(source, prettierOptions);
+        } catch (err) {
+          throw new Error(`Prettier failed with ${err.message}`);
+        }
 
         if (source !== prettierSource) {
           const diffs = diff(source, prettierSource);
