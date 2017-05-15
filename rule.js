@@ -1,5 +1,7 @@
 'use strict';
 
+const util = require('util');
+
 let diff;
 let prettier;
 
@@ -75,7 +77,18 @@ module.exports = {
         try {
           prettierSource = prettier.format(source, prettierOptions);
         } catch (err) {
-          throw new Error(`Prettier failed with ${err.message}`);
+          // We've seen mysterious "undefined" errors. Lets see if we can
+          // narrow down the culprit with more logging.
+          const prettierError = [
+            '',
+            '---ERROR---',
+            util.format(err),
+            '---PRETTIER_OPTIONS---',
+            util.format(prettierOptions),
+            '---SOURCE---',
+            source,
+          ].join('\n');
+          throw new Error(`Prettier exception: ${prettierError}`);
         }
 
         if (source !== prettierSource) {
